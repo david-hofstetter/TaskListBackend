@@ -1,0 +1,297 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "Task List API",
+    "description": "API for a Task List to manage my daily obsticles ",
+    "version": "1.0.0"
+  },
+  "host": "localhost:3004",
+  "basePath": "/",
+  "schemes": [
+    "http"
+  ],
+  "securityDefinitions": {
+    "api_key": {
+      "type": "apiKey",
+      "name": "api-key",
+      "in": "header"
+    }
+  },
+  "paths": {
+    "/login": {
+      "post": {
+        "tags": [
+          "login"
+        ],
+        "summary": "login",
+        "description": "login to your account",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "mail": {
+                  "example": "any"
+                },
+                "pwd": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "logged in",
+            "schema": {
+              "$ref": "#/definitions/tasks"
+            }
+          },
+          "401": {
+            "description": "failed"
+          }
+        }
+      }
+    },
+    "/verify": {
+      "get": {
+        "tags": [
+          "verify"
+        ],
+        "summary": "verify",
+        "description": "verify your account",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "verified",
+            "schema": {
+              "$ref": "#/definitions/tasks"
+            }
+          },
+          "401": {
+            "description": "failed"
+          }
+        }
+      }
+    },
+    "/logout": {
+      "delete": {
+        "tags": [
+          "logout"
+        ],
+        "summary": "logout",
+        "description": "logout of the account",
+        "parameters": [],
+        "responses": {
+          "204": {
+            "description": "logged out",
+            "schema": {
+              "$ref": "#/definitions/tasks"
+            }
+          }
+        }
+      }
+    },
+    "/tasks": {
+      "get": {
+        "tags": [
+          "tasks"
+        ],
+        "summary": "Get tasks",
+        "description": "Get all tasks",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Showed",
+            "schema": {
+              "$ref": "#/definitions/tasks"
+            }
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "tasks"
+        ],
+        "summary": "Create a task",
+        "description": "Creata a new task",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": "Created",
+            "schema": {
+              "$ref": "#/definitions/tasks"
+            }
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        }
+      }
+    },
+    "/tasks/{id}": {
+      "get": {
+        "tags": [
+          "tasks"
+        ],
+        "summary": "Get a task",
+        "description": "Get a task by its ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "204": {
+            "description": "Show data",
+            "schema": {
+              "$ref": "#/definitions/tasks"
+            }
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "task not found"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "tasks"
+        ],
+        "summary": "Edit a task",
+        "description": "Edit a task by its ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Edited",
+            "schema": {
+              "$ref": "#/definitions/tasks"
+            }
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "task not found"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "tasks"
+        ],
+        "summary": "Delete a task",
+        "description": "Delete a task by its ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Deleted",
+            "schema": {
+              "$ref": "#/definitions/tasks"
+            }
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "task not found"
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "server side error": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "type": "string",
+          "example": "ERROR"
+        },
+        "msg": {
+          "type": "string",
+          "example": "some error message"
+        },
+        "error": {
+          "type": "object",
+          "properties": {
+            "message": {
+              "type": "string",
+              "example": "Error message caught"
+            },
+            "name": {
+              "type": "string",
+              "example": "Error name"
+            },
+            "stack": {
+              "type": "string",
+              "example": "Error stack"
+            }
+          },
+          "required": [
+            "message",
+            "name"
+          ]
+        }
+      },
+      "required": [
+        "status",
+        "msg"
+      ]
+    },
+    "tasks": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "example": "1"
+        },
+        "title": {
+          "type": "string",
+          "example": "Just an example"
+        },
+        "creationDate": {
+          "type": "string",
+          "example": "2023-06-15"
+        },
+        "completionDate": {
+          "type": "string",
+          "example": "2023-06-21"
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "creationDate",
+        "completionDate"
+      ]
+    }
+  }
+}

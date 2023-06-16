@@ -1,122 +1,214 @@
-const express = require(`express`);
-const session = require(`express-session`);
-const app = express();
-const port = 3003;
+const express = require('express')
+const session = require('express-session')
+const swagUI = require('swagger-ui-express')
+const swagDoc = require('./swagger-output.json')
+const app = express()
+const port = 3004
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use('/swagger', swagUI.serve, swagUI.setup(swagDoc))
+
+app.use(express.json())
+app.use(express.urlencoded({ extended: true }))
 
 app.use(
   session({
-    secret: "supersecret",
+    secret: 'supersecret',
     resave: false,
     saveUninitialized: true,
-    cookie: {},
+    cookie: {}
   })
-);
+)
 
 const tasks = [
   {
-    id: "1",
-    title: "Recherche für Projekt",
-    creationDate: "2023-06-14",
-    completionDate: "2023-06-21",
+    id: '1',
+    title: 'Recherche für Projekt',
+    creationDate: '2023-06-14',
+    completionDate: '2023-06-21'
   },
   {
-    id: "2",
-    title: "Lebensmittel Einkaufen",
-    creationDate: "2023-06-16",
-    completionDate: "2023-06-18",
+    id: '2',
+    title: 'Lebensmittel Einkaufen',
+    creationDate: '2023-06-16',
+    completionDate: '2023-06-18'
   },
   {
-    id: "3",
-    title: "Trainieren für Wettkampf",
-    creationDate: "2023-06-15",
-    completionDate: "2023-06-24",
+    id: '3',
+    title: 'Trainieren für Wettkampf',
+    creationDate: '2023-06-15',
+    completionDate: '2023-06-24'
   },
   {
-    id: "4",
-    title: "ins Gym gehen",
-    creationDate: "2023-06-15",
-    completionDate: "2023-06-24",
-  },
-];
+    id: '4',
+    title: 'ins Gym gehen',
+    creationDate: '2023-06-15',
+    completionDate: '2023-06-24'
+  }
+]
 const accounts = [
-  { email: "dave@gmail", password: "1234" },
-  { email: "justin@me.ch", password: "abc" },
-];
+  { mail: 'dave@gmail.com', pwd: 'm295' },
+  { mail: 'justin@me.ch', pwd: 'm295' }
+]
+const falsePwdOrMail = {
+  error: 'wrong Password or Email'
+}
+const notLoggedIn = {
+  error: "you're logged out"
+}
+const mistake = {
+  error: 'failed'
+}
+const succeded = {
+  passed: 'It worked'
+}
+const notHere = {
+  error: 'Not Found'
+}
+const verificationTrue = {
+  passed: 'verified'
+}
+const login = {
+  passed: "you're now logged in"
+}
 
-app.get(`/tasks`, (request, response) => {
-  response.status(200).json(tasks);
-});
+app.post('/login', (request, response) => {
+  /*
+ #swagger.tags = ["login"]
+ #swagger.summary = 'login'
+ #swagger.description = 'login to your account'
+ #swagger.responses[201] = {description: "logged in", schema:{$ref: "#/definitions/tasks"}}
+ #swagger.responses[401] = {description: "failed"}
+*/
 
-app.post(`/tasks`, (request, response) => {
-  const createNewTask = request.body;
-  tasks.push(createNewTask);
-  response.json(tasks);
-});
-
-app.get(`/tasks/:id`, (request, response) => {
-  const taskId = parseInt(request.params.id);
-  if (tasks) {
-    response.status(200).json(tasks[taskId - 1]);
-  } else {
-    response.status(404).send("Task not Found");
+  if (request.body.mail !== accounts[0].mail || request.body.pwd !== accounts[0].pwd || request.body.mail !== accounts[1].mail || request.body.pwd !== accounts[1].pwd) {
+    return response.status(401).json(falsePwdOrMail)
   }
-});
+  request.session.mail = request.body.mail
+  response.status(201).json(login)
+})
 
-app.put(`/tasks/:id`, (request, response) => {
-  const taskId = parseInt(request.params.id);
-  const index = tasks.findIndex((t) => t.id === taskId);
-  const updatedTask = request.body;
-  const task = tasks[index];
-
-  tasks.push(updatedTask);
-  //const existingTask = tasks.find(task => task.id === taskId);
-  if (!task) {
-    response.status(404).send("Task does not exist");
-  } else {
-    response.status(200).json(task);
+app.get('/verify', (request, response) => {
+  /*
+ #swagger.tags = ["verify"]
+ #swagger.summary = 'verify'
+ #swagger.description = 'verify your account'
+ #swagger.responses[200] = {description: "verified", schema:{$ref: "#/definitions/tasks"}}
+ #swagger.responses[401] = {description: "failed"}
+*/
+  if (!request.session.mail) {
+    return response.status(401).json(mistake)
   }
-});
-app.delete("/tasks/:id", (request, response) => {
-  const taskId = request.params.id;
+  response.status(200).json(verificationTrue)
+})
+
+app.delete('/logout', (request, response) => {
+  /*
+ #swagger.tags = ["logout"]
+ #swagger.summary = 'logout'
+ #swagger.description = 'logout of the account'
+ #swagger.responses[204] = {description: "logged out", schema:{$ref: "#/definitions/tasks"}}
+*/
+  request.session.destroy()
+  response.status(204).json(notLoggedIn)
+})
+
+app.get('/tasks', (request, response) => {
+  /*
+ #swagger.tags = ["tasks"]
+ #swagger.summary = 'Get tasks'
+ #swagger.description = 'Get all tasks'
+ #swagger.responses[200] = {description: "Showed", schema:{$ref: "#/definitions/tasks"}}
+*/
+  if (!request.session.mail) {
+    response.status(403).json(notLoggedIn)
+  } else {
+    response.status(200).json(tasks)
+  }
+})
+
+app.post('/tasks', (request, response) => {
+  /*
+ #swagger.tags = ["tasks"]
+ #swagger.summary = 'Create a task'
+ #swagger.description = 'Creata a new task'
+ #swagger.responses[201] = {description: "Created", schema:{$ref: "#/definitions/tasks"}}
+*/
+  const createNewTask = request.body
+  if (!request.session.mail) {
+    response.status(403).json(notLoggedIn)
+  } else {
+    tasks.push(createNewTask)
+    response.status(201).json(tasks)
+  }
+})
+
+app.get('/tasks/:id', (request, response) => {
+/*
+ #swagger.tags = ["tasks"]
+ #swagger.summary = 'Get a task'
+ #swagger.description = 'Get a task by its ID'
+ #swagger.responses[204] = {description: "Show data", schema:{$ref: "#/definitions/tasks"}}
+ #swagger.responses[404] = {description: "task not found"}
+*/
+  const id = parseInt(request.params.id)
+  const index = tasks.findIndex((tas) => tas.id === id)
+
+  if (!request.session.mail) {
+    response.status(403).json(notLoggedIn)
+  } else {
+    if (index) {
+      response.status(200).json(tasks[id - 1])
+    } else {
+      response.status(404).json(notHere)
+    }
+  }
+})
+
+app.put('/tasks/:id', (request, response) => {
+  /*
+ #swagger.tags = ["tasks"]
+ #swagger.summary = 'Edit a task'
+ #swagger.description = 'Edit a task by its ID'
+ #swagger.responses[200] = {description: "Edited", schema:{$ref: "#/definitions/tasks"}}
+ #swagger.responses[404] = {description: "task not found"}
+*/
+  const taskId = request.params.id
+  if (!request.session.mail) {
+    response.status(403).json(mistake)
+  } else {
+    if (tasks[taskId]) {
+      tasks[taskId] = {
+        ...tasks[taskId],
+        ...request.body
+      }
+      response.status(200).json(tasks[taskId])
+    } else {
+      response.sendStatus(404).json(notHere)
+    }
+  }
+})
+app.delete('/tasks/:id', (request, response) => {
+  /*
+ #swagger.tags = ["tasks"]
+ #swagger.summary = 'Delete a task'
+ #swagger.description = 'Delete a task by its ID'
+ #swagger.responses[204] = {description: "Deleted", schema:{$ref: "#/definitions/tasks"}}
+ #swagger.responses[404] = {description: "task not found"}
+*/
+  const taskId = request.params.id
   const index = tasks.findIndex((t) => t.id === taskId)
-  if (index !== -1) {
-    tasks.splice(index, 1)
-    response.status(204).send("DELETED")
+  if (!request.session.mail) {
+    response.status(403).json(mistake)
   } else {
-    response.status(404).send("Task does not exist")
+    if (index !== -1) {
+      tasks.splice(index, 1)
+      response.status(204).json(succeded)
+    } else {
+      response.status(404).json(notHere)
+    }
   }
-});
-const mail = "dave@gmail.com"
-const pwd = "1234"
-
-app.post("/login", (request, response) => {
-    //const mail = parseInt(request.params.email)
-    //const pwd = parseInt(request.params.password)
-    //nochmal überarbeiten
-    if (request.body.mail !== mail || request.body.pwd !== pwd) {
-      return response.status(401).send("Email or password incorrect")
-    }
-    request.session.mail = request.body.mail
-    response.status(201).send("Your logged in")
-  });
-
-  app.get("/verify", (request, response) => {
-    if (!request.session.mail) {
-      return response.status(401).send("failed");
-    }
-    response.status(200).send("verified");
-  });
-  
-  app.delete("/logout", (request, response) => {
-    request.session.destroy();
-    response.status(200).send("Logged out!");
-  });
-
-
+})
 
 app.listen(port, () => {
-  console.log(`${port} is connected SUCCESFULLY`)
-});
+  console.log(`${port} is connected`)
+})
