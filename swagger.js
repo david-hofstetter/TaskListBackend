@@ -26,13 +26,12 @@ const config = {
       }
     },
     tasks: {
-        $id: "1",
-        $title: "Just an example",
-        $creationDate: "2023-06-15",
-        $completionDate: "2023-06-21",
-      },
-    
-    
+      $id: '1',
+      $title: 'Just an example',
+      $creationDate: '2023-06-15',
+      $completionDate: '2023-06-21'
+    }
+
   }
 }
 swaggerAutogen(outputFile, endpointsFiles, config).then(async () => {
