@@ -70,20 +70,17 @@ const verificationTrue = {
 const login = {
   passed: "you're now logged in"
 }
-
+const pwd = 'm295'
 app.post('/login', (request, response) => {
-  /*
- #swagger.tags = ["login"]
- #swagger.summary = 'login'
- #swagger.description = 'login to your account'
- #swagger.responses[201] = {description: "logged in", schema:{$ref: "#/definitions/tasks"}}
- #swagger.responses[401] = {description: "failed"}
-*/
-
-  if (request.body.mail !== accounts[0].mail || request.body.pwd !== accounts[0].pwd || request.body.mail !== accounts[1].mail || request.body.pwd !== accounts[1].pwd) {
+  const { mail } = request.body
+  if (!mail || pwd !== accounts[0].pwd) {
     return response.status(401).json(falsePwdOrMail)
   }
-  request.session.mail = request.body.mail
+  const account = accounts.find((account) => account.mail === mail)
+  if (!account) {
+    return response.status(401).json(notHere)
+  }
+  request.session.mail = mail
   response.status(201).json(login)
 })
 
@@ -95,7 +92,7 @@ app.get('/verify', (request, response) => {
  #swagger.responses[200] = {description: "verified", schema:{$ref: "#/definitions/tasks"}}
  #swagger.responses[401] = {description: "failed"}
 */
-  if (!request.session.mail) {
+  if (!request.session.pwd) {
     return response.status(401).json(mistake)
   }
   response.status(200).json(verificationTrue)
@@ -174,7 +171,7 @@ app.put('/tasks/:id', (request, response) => {
 */
   const taskId = request.params.id
   if (!request.session.mail) {
-    response.status(403).json(mistake)
+    response.status(403).json(notLoggedIn)
   } else {
     if (tasks[taskId]) {
       tasks[taskId] = {
