@@ -20,11 +20,7 @@
   "paths": {
     "/login": {
       "post": {
-        "tags": [
-          "login"
-        ],
-        "summary": "login",
-        "description": "login to your account",
+        "description": "",
         "parameters": [
           {
             "name": "body",
@@ -34,23 +30,17 @@
               "properties": {
                 "mail": {
                   "example": "any"
-                },
-                "pwd": {
-                  "example": "any"
                 }
               }
             }
           }
         ],
         "responses": {
-          "201": {
-            "description": "logged in",
-            "schema": {
-              "$ref": "#/definitions/tasks"
-            }
+          "200": {
+            "description": "OK"
           },
           "401": {
-            "description": "failed"
+            "description": "Unauthorized"
           }
         }
       }
@@ -211,7 +201,7 @@
           }
         ],
         "responses": {
-          "204": {
+          "200": {
             "description": "Deleted",
             "schema": {
               "$ref": "#/definitions/tasks"

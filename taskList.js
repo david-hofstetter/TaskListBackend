@@ -71,17 +71,19 @@ const login = {
   passed: "you're now logged in"
 }
 const pwd = 'm295'
+
 app.post('/login', (request, response) => {
   const { mail } = request.body
-  if (!mail || pwd !== accounts[0].pwd) {
-    return response.status(401).json(falsePwdOrMail)
+  const defineMail = /^\S+@\S+\.\S+$/ // kopiert von chatgpt
+  if (!mail || !defineMail.test(mail) || pwd !== accounts[0].pwd) {
+    response.status(401).json(falsePwdOrMail)
   }
   const account = accounts.find((account) => account.mail === mail)
   if (!account) {
     return response.status(401).json(notHere)
   }
   request.session.mail = mail
-  response.status(201).json(login)
+  response.status(200).json(login)
 })
 
 app.get('/verify', (request, response) => {
@@ -189,7 +191,7 @@ app.delete('/tasks/:id', (request, response) => {
  #swagger.tags = ["tasks"]
  #swagger.summary = 'Delete a task'
  #swagger.description = 'Delete a task by its ID'
- #swagger.responses[204] = {description: "Deleted", schema:{$ref: "#/definitions/tasks"}}
+ #swagger.responses[200] = {description: "Deleted", schema:{$ref: "#/definitions/tasks"}}
  #swagger.responses[404] = {description: "task not found"}
 */
   const taskId = request.params.id
@@ -199,7 +201,7 @@ app.delete('/tasks/:id', (request, response) => {
   } else {
     if (index !== -1) {
       tasks.splice(index, 1)
-      response.status(204).json(succeded)
+      response.status(200).json(succeded)
     } else {
       response.status(404).json(notHere)
     }
