@@ -34,6 +34,11 @@ Dieser Befehl startet die Anwendung oder den Entwicklungs-/Build-Prozess, abhän
 ### Endpunkte 
 Alle Endpunkte sind im Swagger zu sehen.
 
+### Benutzte Programme / Extensions
+- Eslint
+- Swagger
+- Github
+- Postman
 ### Author
 - David Hofstetter
 - https://github.com/david-hofstetter

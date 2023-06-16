@@ -9,7 +9,8 @@
   },
   "scripts": {
     "start-dev": "nodemon swagger.js --ignore swagger-output.json",
-    "start": "node swagger.js"
+    "start": "node swagger.js",
+    "lint": "npx eslint taskList.js"
   },
   "devDependencies": {
     "eslint": "^8.42.0",

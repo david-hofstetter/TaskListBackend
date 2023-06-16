@@ -201,7 +201,7 @@ app.delete('/tasks/:id', (request, response) => {
   } else {
     if (index !== -1) {
       tasks.splice(index, 1)
-      response.status(200).json(succeded)
+      response.status(202).json(succeded)
     } else {
       response.status(404).json(notHere)
     }
