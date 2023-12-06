@@ -15,8 +15,7 @@ Folgen Sie diesen Schritten, um die Entwicklungsumgebung einzurichten:
 Projekt auschecken
 Öffnen Sie ein Terminal oder eine Kommandozeile.
 Navigieren Sie zum Verzeichnis, in dem Sie das Projekt speichern möchten.
-Führen Sie den folgenden Befehl aus, um das Projekt aus dem Git-Repository auszuchecken:
-- git clone https://github.com/david-hofstetter/lernbeurteilungB.git
+Clonen Sie dieses Git auf ihr Gerät.
 
 ### Projektabhängigkeiten installieren
 Öffnen Sie ein Terminal oder eine Kommandozeile.
